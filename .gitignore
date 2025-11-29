@@ -211,3 +211,6 @@ bin/
 
 # Local VSCode settings
 .vscode/
+
+# Kiro IDE settings
+.kiro/
