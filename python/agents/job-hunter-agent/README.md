@@ -1,21 +1,59 @@
-# Job Hunter Agent
-ADK version: 1.14.1, Owner: @manv3lez
+# 🎯 Job Hunter Agent
+ADK version: 1.14.1 | Owner: [@manv3lez](https://github.com/manv3lez)
 
-A multi-agent AI system that provides comprehensive job hunting assistance through specialized sub-agents.
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Google ADK](https://img.shields.io/badge/Google-ADK%201.14.1-4285F4?logo=google)](https://github.com/google/adk-samples)
+[![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
 
-## Overview
+> **A comprehensive multi-agent AI system that guides you through every stage of your job search journey** — from career analysis and job discovery to interview preparation and long-term career strategy.
 
-The Job Hunter Agent orchestrates specialized sub-agents to guide users through the entire job hunting lifecycle. Built on the Google ADK framework, it uses a coordinator pattern where the Career Coordinator agent manages workflow and delegates tasks to domain-specific sub-agents.
+Built on the Google Agent Development Kit (ADK), this system orchestrates 5 specialized AI agents working together to provide personalized, actionable job hunting assistance.
 
-### Sub-Agents
+## ✨ Key Features
 
-1. **Career Profile Analyst** - Analyzes background, skills, experience, and career goals to create a comprehensive career profile
-2. **Job Market Researcher** - Uses Google Search to identify and research relevant job opportunities, company information, and salary data
-3. **Application Strategist** - Creates tailored resumes and cover letters with ATS (Applicant Tracking System) optimization
-4. **Interview Preparation Coach** ✨ - Provides comprehensive interview preparation including company research, behavioral and technical questions, STAR method examples, and study recommendations
-5. **Career Strategy Advisor** ✨ - Offers long-term career planning with career path analysis, skills gap identification, industry trend forecasting, and development roadmaps
+- 🎓 **Career Profile Analysis** - Deep analysis of your skills, experience, and career goals
+- 🔍 **Smart Job Discovery** - Google Search integration to find relevant opportunities
+- 📝 **ATS-Optimized Applications** - Generate tailored resumes and cover letters that pass Applicant Tracking Systems
+- 🎤 **Interview Preparation** - Company research, practice questions, and STAR method examples
+- 🚀 **Career Strategy Planning** - Long-term career roadmaps with skills gap analysis and industry trends
+- 💾 **State Management** - Track multiple job applications simultaneously
+- 🧪 **Comprehensive Testing** - Full test suite with unit, property-based, and integration tests
 
-## Architecture
+## 🤖 The Agent Team
+
+The system uses a **coordinator pattern** where a Career Coordinator orchestrates 5 specialized sub-agents:
+
+| Agent | Role | Key Capabilities |
+|-------|------|------------------|
+| 🎓 **Career Profile Analyst** | Analyzes your background | Skills extraction, experience analysis, strengths/gaps identification |
+| 🔍 **Job Market Researcher** | Finds opportunities | Google Search integration, company research, salary data |
+| 📝 **Application Strategist** | Creates applications | ATS optimization, keyword matching, tailored resumes & cover letters |
+| 🎤 **Interview Coach** | Prepares you for interviews | Company culture research, behavioral/technical questions, STAR examples |
+| 🚀 **Career Strategy Advisor** | Plans your career path | Career trajectory analysis, skills roadmap, industry trend forecasting |
+
+## 🚀 Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/google/adk-samples.git
+cd adk-samples/python/agents/job-hunter-agent
+
+# Install dependencies
+uv sync
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your Google Cloud Project details
+
+# Authenticate with Google Cloud
+gcloud auth application-default login
+
+# Run the agent (Web UI)
+uv run adk web
+# Open http://localhost:8000 in your browser
+```
+
+## 🏗️ Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -54,9 +92,39 @@ The Job Hunter Agent orchestrates specialized sub-agents to guide users through 
 └───────────────┘
 ```
 
-## Features
+## 💬 Example Interaction
 
-### Core Features
+```
+You: I need help finding a software engineering job
+
+Career Coordinator: Hello! I'm your Career Coordinator. I'll guide you through:
+1. 📋 Career Profile Analysis
+2. 🔍 Job Market Research  
+3. 📝 Application Materials
+4. 🎤 Interview Preparation
+5. 🚀 Career Strategy
+
+Let's start by analyzing your career profile...
+
+[After providing your background]
+
+Career Coordinator: ✅ Profile Analysis Complete!
+
+Top Strengths: Cloud Architecture (AWS, GCP), Python (5 years), Team Leadership
+Skills Gaps: Kubernetes, System Design at Scale
+Recommendations: CKA certification, System design portfolio project
+
+Ready to search for jobs? 🔍
+```
+
+## 🎯 Use Cases
+
+- **Job Seekers**: Get personalized guidance through your entire job search
+- **Career Changers**: Identify transferable skills and create transition strategies  
+- **Interview Prep**: Practice with role-specific questions and company research
+- **Career Planning**: Map out long-term career trajectories with actionable roadmaps
+
+## 🛠️ Technical Highlights
 
 - **Comprehensive Career Analysis**: Extracts and categorizes skills, analyzes experience, identifies strengths and gaps
 - **ATS Optimization**: Creates application materials optimized for Applicant Tracking Systems with keyword matching
