@@ -37,12 +37,12 @@ This project adapts concepts from the [Gemini FullStack LangGraph Quickstart](ht
 
 You have two options to get started. Choose the one that best fits your setup:
 
-*   A. **[Google AI Studio](#a-google-ai-studio)**: Choose this path if you want to use a **Google AI Studio API key**. This method involves cloning the sample repository.
-*   B. **[Google Cloud Vertex AI](#b-google-cloud-vertex-ai)**: Choose this path if you want to use an existing **Google Cloud project** for authentication. This method generates a new, prod-ready project using the [agent-starter-pack](https://goo.gle/agent-starter-pack) including all the deployment scripts required.
+*   A. **[Google AI Studio (Recommended)](#a-google-ai-studio-recommended)**: The quickest way to get started using a **Google AI Studio API key**. This method involves cloning the sample repository.
+*   B. **[Google Cloud Vertex AI](#b-google-cloud-vertex-ai)**: Choose this path if you want to use an existing **Google Cloud project** for authentication and deployment. This method generates a new, prod-ready project using the [agent-starter-pack](https://goo.gle/agent-starter-pack) including all the deployment scripts required.
 
 ---
 
-### A. Google AI Studio
+### A. Google AI Studio (Recommended)
 
 You'll need a **[Google AI Studio API Key](https://aistudio.google.com/app/apikey)**.
 
@@ -55,10 +55,9 @@ cd adk-samples/python/agents/deep-search
 ```
 
 #### Step 2: Set Environment Variables
-Create a `.env` file in the `app` folder by running the following command (replace YOUR_AI_STUDIO_API_KEY with your actual API key):
+Create a `.env` file in the `app` folder with your API key (see `.env.example` for reference):
 
 ```bash
-echo "GOOGLE_GENAI_USE_VERTEXAI=FALSE" >> app/.env
 echo "GOOGLE_API_KEY=YOUR_AI_STUDIO_API_KEY" >> app/.env
 ```
 
@@ -72,9 +71,30 @@ Your agent is now running at `http://localhost:5173`.
 
 ---
 
-### B. Google Cloud Vertex AI
+### B. Google Cloud Vertex AI (via Agent Starter Pack)
 
-You'll also need: **[Google Cloud SDK](https://cloud.google.com/sdk/docs/install)** and a **Google Cloud Project** with the **Vertex AI API** enabled.
+Use the [Agent Starter Pack](https://goo.gle/agent-starter-pack) to create a production-ready project with deployment scripts. This is ideal for cloud deployment scenarios.
+
+You'll need: **[Google Cloud SDK](https://cloud.google.com/sdk/docs/install)** and a **Google Cloud Project** with the **Vertex AI API** enabled.
+
+<details>
+<summary>📁 Alternative: Using the cloned repository with Vertex AI</summary>
+
+If you've already cloned the repository (as in Option A) and want to use Vertex AI instead of AI Studio, create a `.env` file in the `app` folder with:
+
+```bash
+echo "GOOGLE_GENAI_USE_VERTEXAI=TRUE" >> app/.env
+echo "GOOGLE_CLOUD_PROJECT=YOUR_PROJECT_ID" >> app/.env
+echo "GOOGLE_CLOUD_LOCATION=us-central1" >> app/.env
+```
+
+Make sure you're authenticated with Google Cloud:
+```bash
+gcloud auth application-default login
+```
+
+Then run `make install && make dev` to start the agent.
+</details>
 
 #### Step 1: Create Project from Template
 This command uses the [Agent Starter Pack](https://goo.gle/agent-starter-pack) to create a new directory (`my-fullstack-agent`) with all the necessary code.
@@ -106,17 +126,40 @@ cd my-fullstack-agent && make install && make dev
 Your agent is now running at `http://localhost:5173`.
 
 ## ☁️ Cloud Deployment
-> **Note:** The cloud deployment instructions below apply only if you chose the **Google Cloud Vertex AI** option.
 
-You can quickly deploy your agent to a **development environment** on Google Cloud. You can deploy your latest code at any time with:
+> **Note:** Cloud deployment applies only to projects created with **agent-starter-pack** (Option B).
 
+**Prerequisites:**
 ```bash
-# Replace YOUR_DEV_PROJECT_ID with your actual Google Cloud Project ID
-gcloud config set project YOUR_DEV_PROJECT_ID
-make backend
+gcloud components update
+gcloud config set project YOUR_PROJECT_ID
 ```
 
-For robust, **production-ready deployments** with automated CI/CD, please follow the detailed instructions in the **[Agent Starter Pack Development Guide](https://googlecloudplatform.github.io/agent-starter-pack/guide/development-guide.html#b-production-ready-deployment-with-ci-cd)**.
+#### Option 1: Deploy with ADK Web UI (Default)
+
+For a quick deployment using the built-in [adk-web](https://github.com/google/adk-web) interface:
+
+```bash
+make deploy IAP=true
+```
+
+#### Option 2: Deploy with Custom UI (React Frontend)
+
+This agent includes a custom React frontend. To deploy it:
+
+1. **Configure the Dockerfile** - See the [Deploy UI Guide](https://googlecloudplatform.github.io/agent-starter-pack/guide/deploy-ui.html) for the required Dockerfile changes.
+
+2. **Deploy with the frontend port:**
+```bash
+make deploy IAP=true PORT=5173
+```
+
+#### After Deployment
+
+Once deployed, grant users access to your IAP-protected service by following the [Manage User Access](https://cloud.google.com/run/docs/securing/identity-aware-proxy-cloud-run#manage_user_or_group_access) documentation.
+
+For production deployments with CI/CD, see the [Agent Starter Pack Development Guide](https://googlecloudplatform.github.io/agent-starter-pack/guide/development-guide.html#b-production-ready-deployment-with-ci-cd).
+
 ## Agent Details
 
 | Attribute | Description |
