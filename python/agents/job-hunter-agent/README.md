@@ -1096,44 +1096,34 @@ The system has the following limitations:
 
 ## Roadmap
 
-### Phase 1: MVP ✅ COMPLETE
-- [x] Career Coordinator agent
-- [x] Career Profile Analyst sub-agent
-- [x] Job Market Researcher sub-agent
-- [x] Application Strategist sub-agent
-- [x] ATS Keyword Analyzer utility
-- [x] State management system
-- [x] Error handling system
-- [x] User interaction features
-- [x] Unit and property-based tests
+### ✅ Current MVP (Complete)
+- [x] **5 Specialized AI Agents** — Career Profile Analyst, Job Market Researcher, Application Strategist, Interview Coach, Career Strategy Advisor
+- [x] **Career Coordinator** — Orchestrates all sub-agents through workflow stages
+- [x] **ATS Optimization** — Keyword analysis and match scoring (90%+ typical)
+- [x] **Cover Letter Generation** — Tailored cover letters for each application
+- [x] **Interview Preparation** — Company research, STAR examples, study plans
+- [x] **Career Strategy Planning** — 5-year roadmaps, skills gap analysis, industry trends
+- [x] **State Management** — Track multiple job applications
+- [x] **Error Handling** — Graceful degradation and user-friendly messages
+- [x] **Comprehensive Testing** — Unit, property-based, and integration tests
 
-### Phase 2: Interview Preparation & Career Strategy ✅ COMPLETE
-- [x] Interview Preparation Coach sub-agent
-- [x] Career Strategy Advisor sub-agent
-- [x] Company culture research with Google Search
-- [x] Behavioral and technical question generation
-- [x] STAR method example generation from user profile
-- [x] Study topic identification and resource recommendations
-- [x] Career path analysis and progression mapping
-- [x] Skills gap identification for long-term goals
-- [x] Industry trend forecasting
-- [x] Development roadmap generation
-- [x] Complete end-to-end workflow testing
-- [x] Integration testing for all 5 sub-agents
+### 🚧 Next Phase: Flexible Architecture (In Progress)
+- [ ] **Flexible conversation routing** — Ask any question, any time (no forced pipeline)
+- [ ] **Persistent user sessions** — PostgreSQL database for profiles and history
+- [ ] **Intelligent intent detection** — Understands what you're asking
+- [ ] **Context-aware responses** — Remembers previous conversations
+- [ ] **User authentication** — Secure login and session management
+- [ ] **Application tracking dashboard** — Visual tracking of all applications
+- [ ] **Resume version control** — Manage and compare multiple resume versions
+- [ ] **Performance optimization** — Parallel specialist execution, caching, streaming responses
+- [ ] **Resume parsing** — Upload PDF/DOCX resumes for analysis
+- [ ] **Enhanced job board integration** — Direct APIs for Indeed, Glassdoor
+- [ ] **Salary negotiation guidance** — Negotiation strategies and scripts
+- [ ] **Mock interview practice** — Voice-based interview simulation
+- [ ] **Skills assessment tracking** — Track certifications and skill development
+- [ ] **Follow-up automation** — Automated reminders and follow-up scheduling
 
-### Phase 3: Enhanced Features (Future)
-- [ ] Persistent state storage (Cloud SQL)
-- [ ] User authentication and authorization
-- [ ] Resume parsing (PDF/DOCX upload)
-- [ ] Enhanced job board integration (Indeed, LinkedIn Jobs APIs)
-- [ ] Email drafting for networking and follow-ups
-- [ ] Application tracking dashboard
-- [ ] LinkedIn direct integration (OAuth)
-- [ ] Salary negotiation guidance
-- [ ] Mock interview practice (voice-based)
-- [ ] Skills assessment and certification tracking
-- [ ] Networking recommendations
-- [ ] Follow-up automation
+**Note**: LinkedIn direct integration (OAuth) is not planned due to LinkedIn API limitations. LinkedIn profile optimization is provided as copy-paste text instead.
 
 ## Contributing
 
