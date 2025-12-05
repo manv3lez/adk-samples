@@ -40,6 +40,7 @@ To learn more, check out the [ADK Documentation](https://google.github.io/adk-do
 │   │   ├── data-science
 │   │   ├── financial-advisor
 │   │   ├── fomc-research
+│   │   ├── gemini-fullstack
 │   │   ├── deep-search
 │   │   ├── google-trends-agent
 │   │   ├── image-scoring
@@ -48,6 +49,7 @@ To learn more, check out the [ADK Documentation](https://google.github.io/adk-do
 │   │   ├── marketing-agency
 │   │   ├── medical-pre-authorization
 │   │   ├── personalized-shopping
+│   │   ├── plumber-data-engineering-assistant
 │   │   ├── RAG
 │   │   ├── realtime-conversational-agent
 │   │   ├── safety-plugins
