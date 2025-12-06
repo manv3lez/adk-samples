@@ -99,10 +99,14 @@ from .sub_agents.application_strategist import application_strategist_agent
 from .sub_agents.interview_coach import interview_coach_agent
 from .sub_agents.career_strategy_advisor import career_strategy_advisor_agent
 
+# Phase 2: Import Managing Coordinator for flexible routing
+from .managing_coordinator import managing_coordinator
+
 
 MODEL = "gemini-2.5-pro"
 
 
+# Phase 1: Career Coordinator (rigid pipeline - kept for backward compatibility)
 career_coordinator = LlmAgent(
     name="career_coordinator",
     model=MODEL,
@@ -124,4 +128,6 @@ career_coordinator = LlmAgent(
     ],
 )
 
-root_agent = career_coordinator
+# Phase 2: Use Managing Coordinator as root agent (flexible routing)
+# This provides a better user experience with LLM-based intent understanding
+root_agent = managing_coordinator

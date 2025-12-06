@@ -55,15 +55,63 @@ uv run adk web
 
 ## 🏗️ Architecture
 
+### Phase 2 Architecture (Current)
+
+Phase 2 introduces flexible, conversational routing with persistent sessions:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│              Managing Coordinator (Gemini 3 Pro)             │
+│                  Flexible LLM-Based Routing                  │
+│                                                              │
+│  • Analyzes user questions with natural language             │
+│  • Routes to 1-3 relevant specialists dynamically            │
+│  • Synthesizes responses from multiple specialists           │
+│  • Maintains conversation context across sessions            │
+└──────────────────┬───────────────────────────────────────────┘
+                   │
+        ┌──────────┴──────────┐
+        │                     │
+        ▼                     ▼
+┌───────────────┐    ┌────────────────────────┐
+│ Specialist    │    │  Infrastructure        │
+│ Agents        │    │                        │
+│ (Gemini 3 Pro)│    │  • PostgreSQL Database │
+│               │    │  • User Authentication │
+│ 1. Career     │    │  • Session Management  │
+│    Profile    │    │  • Conversation History│
+│    Analyst ✅ │    │  • Cached Analyses     │
+│               │    │  • Google Search       │
+│ 2. Job Market │    │  • ATS Analyzer        │
+│    Researcher ✅│   └────────────────────────┘
+│               │
+│ 3. Application│
+│    Strategist │
+│               │
+│ 4. Interview  │
+│    Preparation│
+│               │
+│ 5. Strategic  │
+│    Career     │
+│    Advisor    │
+└───────────────┘
+
+✅ = Upgraded to Gemini 3 Pro
+```
+
+### Phase 1 Architecture (Legacy)
+
+Phase 1 used a rigid pipeline approach (still available for backward compatibility):
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Career Coordinator                        │
-│                  (Main Orchestrator)                         │
+│                  (Pipeline Orchestrator)                     │
 │                                                              │
-│  - Manages workflow stages                                   │
-│  - Routes user requests to appropriate sub-agents            │
-│  - Maintains state across the job hunting journey            │
-│  - Provides user guidance and explanations                   │
+│  - Enforces sequential workflow stages                       │
+│  - Routes based on current stage                             │
+│  - Maintains in-memory state                                 │
+│  - Provides workflow guidance                                │
 └──────────────────┬───────────────────────────────────────────┘
                    │
         ┌──────────┴──────────┐
@@ -84,13 +132,26 @@ uv run adk web
 │    Strategist │
 │               │
 │ 4. Interview  │
-│    Coach ✨   │
+│    Coach      │
 │               │
 │ 5. Career     │
 │    Strategy   │
-│    Advisor ✨ │
+│    Advisor    │
 └───────────────┘
 ```
+
+### Key Architectural Differences
+
+| Aspect | Phase 1 (Legacy) | Phase 2 (Current) |
+|--------|------------------|-------------------|
+| **Routing** | Sequential pipeline | Flexible LLM-based |
+| **Intent Detection** | Keyword matching | Natural language understanding |
+| **Conversation** | Step-by-step form | Natural conversation |
+| **State** | In-memory only | PostgreSQL database |
+| **Sessions** | Single session | Persistent across logins |
+| **Model** | Gemini 2.5 Pro | Gemini 3 Pro |
+| **Authentication** | None | bcrypt + sessions |
+| **Specialists** | Called in order | Called as needed |
 
 ## 💬 Example Interaction
 
@@ -216,7 +277,26 @@ GOOGLE_SEARCH_ENGINE_ID=your-search-engine-id
 gcloud auth application-default login
 ```
 
-5. **Verify installation**:
+5. **Set up PostgreSQL database (Phase 2 - Optional)**:
+
+If you want to use Phase 2 features (persistent sessions, authentication):
+
+```bash
+# Install PostgreSQL (if not already installed)
+# On macOS: brew install postgresql
+# On Ubuntu: sudo apt-get install postgresql
+# On Windows: Download from postgresql.org
+
+# Create database
+createdb job_hunter_agent
+
+# Run migrations
+python -m job_hunter_agent.database.migrations
+```
+
+See [Database Quick Start](job_hunter_agent/database/QUICK_START.md) for detailed setup instructions.
+
+6. **Verify installation**:
 ```bash
 uv run pytest tests/test_project_structure.py
 ```
@@ -263,12 +343,66 @@ This opens a web interface at `http://localhost:8000` (or `http://127.0.0.1:8000
 
 #### Option 3: Python Script
 
+**Phase 2 (Flexible Routing - Recommended):**
 ```python
 from job_hunter_agent import root_agent
 
-# Run the agent
-response = root_agent.run("Help me find a software engineering job")
+# root_agent is now the Managing Coordinator (Phase 2)
+# Ask any question - no forced pipeline!
+response = root_agent.run("What jobs should I apply to?")
 print(response)
+
+# Or with context
+from job_hunter_agent.managing_coordinator import build_coordinator_context
+
+context = build_coordinator_context(
+    conversation_history=[
+        {"role": "user", "content": "I'm a software engineer"},
+    ],
+    user_profile={
+        "background": "5 years experience",
+        "career_goals": "Senior role",
+    },
+)
+response = root_agent.run("Help with my resume", context=context)
+```
+
+**Phase 1 (Pipeline - Legacy):**
+```python
+from job_hunter_agent.agent import career_coordinator
+
+# Use Phase 1 coordinator if you need the sequential pipeline
+response = career_coordinator.run("Help me find a software engineering job")
+print(response)
+```
+
+#### Option 4: With Database & Authentication (Phase 2)
+
+```python
+from job_hunter_agent.auth import AuthManager
+from job_hunter_agent.database import get_connection
+from job_hunter_agent import root_agent
+
+# Initialize database connection
+conn = get_connection()
+
+# Create auth manager
+auth_manager = AuthManager(conn)
+
+# Register user
+user_id = auth_manager.register("user@example.com", "secure_password")
+
+# Login
+session_token = auth_manager.login("user@example.com", "secure_password")
+
+# Load user context
+user_context = auth_manager.load_user_context(session_token)
+
+# Use agent with user context
+response = root_agent.run(
+    "What jobs should I apply to?",
+    context=user_context
+)
 ```
 
 ## State Management
@@ -1107,14 +1241,68 @@ The system has the following limitations:
 - [x] **Error Handling** — Graceful degradation and user-friendly messages
 - [x] **Comprehensive Testing** — Unit, property-based, and integration tests
 
-### 🚧 Next Phase: Flexible Architecture (In Progress)
-- [x] **PostgreSQL database integration** — Database schema and connection pooling
-- [x] **User authentication** — Secure login with bcrypt password hashing and session management
-- [ ] **Flexible conversation routing** — Ask any question, any time (no forced pipeline)
-- [ ] **Intelligent intent detection** — Understands what you're asking
-- [ ] **Context-aware responses** — Remembers previous conversations
-- [ ] **Application tracking dashboard** — Visual tracking of all applications
-- [ ] **Resume version control** — Manage and compare multiple resume versions
+### 🚧 Phase 2: Flexible Architecture & Gemini 3 Pro (In Progress)
+
+Phase 2 transforms the Job Hunter Agent from a rigid pipeline into a flexible, conversational advisor with persistent sessions and advanced AI capabilities.
+
+#### ✅ Completed Features
+
+**Core Infrastructure:**
+- [x] **PostgreSQL database integration** — Complete schema with connection pooling, migrations, and indexes
+  - Users, profiles, experiences, skills, education tables
+  - Conversations and cached analyses storage
+  - Applications and resume versions tracking
+  - Optimized indexes for fast queries
+  - See: `job_hunter_agent/database/` for implementation
+
+- [x] **User authentication & session management** — Secure authentication system
+  - bcrypt password hashing (12 rounds)
+  - Session token generation and validation
+  - User registration and login/logout
+  - Session storage with expiration
+  - See: `job_hunter_agent/auth/` for implementation
+
+**AI & Routing:**
+- [x] **Managing Coordinator with flexible routing** — LLM-based intelligent routing
+  - Natural language intent understanding (no hardcoded keywords)
+  - Routes to 1-3 specialists based on question content
+  - Synthesizes responses from multiple specialists
+  - Maintains conversation context across turns
+  - See: `job_hunter_agent/managing_coordinator.py` and `MANAGING_COORDINATOR_README.md`
+
+- [x] **Gemini 3 Pro model upgrade** — Advanced reasoning capabilities
+  - Career Profile Analyst upgraded to `gemini-3-pro-preview`
+  - Job Market Researcher upgraded to `gemini-3-pro-preview`
+  - Configured with high thinking level for complex analysis
+  - Thought Signatures handled automatically by ADK
+  - See: `GEMINI3_UPGRADE_SUMMARY.md` and `JOB_MARKET_RESEARCHER_UPGRADE.md`
+
+**Documentation & Testing:**
+- [x] **Comprehensive Phase 2 documentation** — Complete technical docs
+  - Managing Coordinator usage guide
+  - Database setup and migration guides
+  - Authentication implementation details
+  - Gemini 3 Pro upgrade documentation
+  - Verification scripts for all upgrades
+
+- [x] **Phase 2 integration tests** — Validated all components
+  - Managing Coordinator configuration tests (18/18 passing)
+  - Database connection and schema tests
+  - Authentication flow tests
+  - Model upgrade verification tests
+  - Backward compatibility tests
+
+#### 🔄 In Progress
+
+- [ ] **Application Strategist Gemini 3 Pro upgrade** — Strategic resume optimization
+- [ ] **Interview Preparation specialist upgrade** — Enhanced interview prep with Gemini 3 Pro
+- [ ] **Strategic Career Advisor upgrade** — Advanced career planning capabilities
+- [ ] **Conversation history management** — Database-backed conversation persistence
+- [ ] **Career profile CRUD operations** — Full profile management with caching
+- [ ] **Application tracking CRUD** — Complete application lifecycle tracking
+
+#### 📋 Planned Features
+
 - [ ] **Performance optimization** — Parallel specialist execution, caching, streaming responses
 - [ ] **Resume parsing** — Upload PDF/DOCX resumes for analysis
 - [ ] **Enhanced job board integration** — Direct APIs for Indeed, Glassdoor
@@ -1122,6 +1310,48 @@ The system has the following limitations:
 - [ ] **Mock interview practice** — Voice-based interview simulation
 - [ ] **Skills assessment tracking** — Track certifications and skill development
 - [ ] **Follow-up automation** — Automated reminders and follow-up scheduling
+
+#### 📚 Phase 2 Documentation
+
+- **[Phase 2 Progress Summary](PHASE2_PROGRESS.md)** — Complete Phase 2 status and progress ⭐
+- **[Managing Coordinator README](job_hunter_agent/MANAGING_COORDINATOR_README.md)** — Flexible routing guide
+- **[Gemini 3 Pro Upgrade Summary](GEMINI3_UPGRADE_SUMMARY.md)** — Career Profile Analyst upgrade
+- **[Job Market Researcher Upgrade](JOB_MARKET_RESEARCHER_UPGRADE.md)** — Job Market Researcher upgrade
+- **[Database Quick Start](job_hunter_agent/database/QUICK_START.md)** — Database setup guide
+- **[Authentication README](job_hunter_agent/auth/README.md)** — Authentication implementation
+- **[Phase 2 Design](../.kiro/specs/job-hunter-agent/phase2-flexible-design.md)** — Complete Phase 2 design
+- **[Phase 2 Requirements](../.kiro/specs/job-hunter-agent/phase2-flexible-requirements.md)** — Detailed requirements
+
+#### 🔍 Key Phase 2 Improvements
+
+**Flexible Conversation Flow:**
+```python
+# Phase 1: Rigid pipeline - must complete steps in order
+User: "Help with my resume"
+Agent: "First, let's analyze your career profile..."
+
+# Phase 2: Flexible routing - answer what's asked
+User: "Help with my resume"
+Agent: "I'll help you create a tailored resume. What job are you applying to?"
+```
+
+**Advanced AI Reasoning:**
+- Gemini 3 Pro provides sophisticated job matching algorithms
+- Deep career analysis with nuanced understanding
+- Strategic market insights and trend forecasting
+- Natural language intent detection without keywords
+
+**Persistent Sessions:**
+- User profiles stored in PostgreSQL
+- Conversation history maintained across sessions
+- Cached analyses avoid re-computation
+- Multi-device access with session synchronization
+
+**Production-Ready Infrastructure:**
+- Secure authentication with bcrypt hashing
+- Database connection pooling for performance
+- Comprehensive error handling and logging
+- Full test coverage with integration tests
 
 **Note**: LinkedIn direct integration (OAuth) is not planned due to LinkedIn API limitations. LinkedIn profile optimization is provided as copy-paste text instead.
 

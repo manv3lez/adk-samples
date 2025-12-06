@@ -30,10 +30,24 @@ try:
     from . import agent
     from . import error_handler
     from . import state_manager
+    from . import managing_coordinator
 
-    # Export root_agent for easy access
+    # Export root_agent for easy access (Phase 2: Managing Coordinator)
     root_agent = agent.root_agent
-    __all__ = ["agent", "root_agent", "error_handler", "state_manager"]
+    
+    # Also export both coordinators for flexibility
+    career_coordinator = agent.career_coordinator  # Phase 1 (backward compatibility)
+    managing_coordinator_agent = managing_coordinator.managing_coordinator  # Phase 2
+    
+    __all__ = [
+        "agent",
+        "root_agent",
+        "career_coordinator",
+        "managing_coordinator",
+        "managing_coordinator_agent",
+        "error_handler",
+        "state_manager",
+    ]
 except ImportError:
     # Dependencies not installed (e.g., in test environment without google.adk)
     __all__ = []

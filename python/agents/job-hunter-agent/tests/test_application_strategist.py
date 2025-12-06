@@ -124,3 +124,22 @@ class TestApplicationStrategistAgent:
 
         assert "formatting" in prompt_text.lower()
         assert "ATS-friendly" in prompt_text or "ats" in prompt_text.lower()
+
+    @pytest.mark.skipif(not GOOGLE_ADK_AVAILABLE, reason="google.adk not installed")
+    def test_application_strategist_uses_gemini_3_pro(self):
+        """Test that the Application Strategist uses Gemini 3 Pro model."""
+        from job_hunter_agent.sub_agents.application_strategist import (
+            application_strategist_agent,
+        )
+
+        assert application_strategist_agent.model == "gemini-3-pro-preview"
+
+    @pytest.mark.skipif(not GOOGLE_ADK_AVAILABLE, reason="google.adk not installed")
+    def test_application_strategist_description_mentions_gemini_3(self):
+        """Test that the Application Strategist description mentions Gemini 3 Pro."""
+        from job_hunter_agent.sub_agents.application_strategist import (
+            application_strategist_agent,
+        )
+
+        description = application_strategist_agent.description
+        assert "Gemini 3 Pro" in description or "gemini-3" in description.lower()

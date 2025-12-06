@@ -82,7 +82,7 @@ class TestMVPComponentWiring:
     def test_application_strategist_configuration(self):
         """Verify Application Strategist is properly configured."""
         assert application_strategist_agent.name == "application_strategist"
-        assert application_strategist_agent.model == "gemini-2.5-pro"
+        assert application_strategist_agent.model == "gemini-3-pro-preview"
         assert application_strategist_agent.output_key == "application_materials_output"
 
 

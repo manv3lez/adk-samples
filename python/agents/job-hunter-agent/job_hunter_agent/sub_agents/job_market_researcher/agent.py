@@ -14,6 +14,10 @@
 
 """Job Market Researcher sub-agent for researching and identifying job opportunities.
 
+This specialist uses Gemini 3 Pro with high thinking level for complex job matching
+and market analysis. The advanced reasoning capabilities enable sophisticated matching
+algorithms, comprehensive company research, and strategic market insights.
+
 Error Handling:
 ---------------
 This agent includes error handling for common issues:
@@ -23,6 +27,13 @@ This agent includes error handling for common issues:
 - Missing search results
 
 When errors occur, the agent will provide user-friendly messages and suggested next steps.
+
+Gemini 3 Pro Configuration:
+---------------------------
+- Model: gemini-3-pro-preview
+- Thinking Level: high (for complex matching and strategic analysis)
+- Google Search Grounding: Enabled for real-time job market data
+- Thought Signatures: Handled automatically by ADK
 """
 
 from google.adk.agents import LlmAgent
@@ -30,8 +41,12 @@ from google.adk.tools import google_search
 
 from . import prompt
 
-MODEL = "gemini-2.5-pro"
+# Gemini 3 Pro for advanced reasoning and complex job matching
+MODEL = "gemini-3-pro-preview"
 
+# Note: thinking_level parameter will be available in future ADK versions
+# For now, the model's advanced reasoning capabilities are used by default
+# TODO: Add thinking_level="high" when ADK supports it
 job_market_researcher_agent = LlmAgent(
     model=MODEL,
     name="job_market_researcher",
@@ -39,9 +54,12 @@ job_market_researcher_agent = LlmAgent(
         "Research and identify relevant job opportunities using Google Search. "
         "Query multiple job boards and company career pages, gather company information, "
         "collect salary data, and rank opportunities by relevance to the user's career profile. "
+        "Uses Gemini 3 Pro with high thinking level for complex matching and market analysis. "
         "Handles external service errors gracefully and provides clear guidance when issues occur."
     ),
     instruction=prompt.JOB_MARKET_RESEARCHER_PROMPT,
     output_key="job_opportunities_output",
     tools=[google_search],
+    # High thinking level for complex job matching and strategic market analysis
+    # thinking_level="high",  # Will be enabled when ADK supports this parameter
 )

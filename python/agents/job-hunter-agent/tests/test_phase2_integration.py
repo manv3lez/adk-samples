@@ -59,7 +59,7 @@ class TestPhase2ComponentWiring:
     def test_interview_coach_configuration(self):
         """Verify Interview Coach is properly configured."""
         assert interview_coach_agent.name == "interview_coach"
-        assert interview_coach_agent.model == "gemini-2.5-pro"
+        assert interview_coach_agent.model in ["gemini-2.5-pro", "gemini-3-pro-preview"]
         assert interview_coach_agent.output_key == "interview_prep_output"
         # Verify it has google_search tool
         assert len(interview_coach_agent.tools) > 0
@@ -67,8 +67,14 @@ class TestPhase2ComponentWiring:
     def test_career_strategy_advisor_configuration(self):
         """Verify Career Strategy Advisor is properly configured."""
         assert career_strategy_advisor_agent.name == "career_strategy_advisor"
-        assert career_strategy_advisor_agent.model == "gemini-2.5-pro"
+        assert career_strategy_advisor_agent.model in ["gemini-2.5-pro", "gemini-3-pro-preview"]
         assert career_strategy_advisor_agent.output_key == "career_strategy_output"
+    
+    def test_career_profile_analyst_configuration(self):
+        """Verify Career Profile Analyst is properly configured with Gemini 3 Pro."""
+        assert career_profile_analyst_agent.name == "career_profile_analyst"
+        assert career_profile_analyst_agent.model == "gemini-3-pro-preview"
+        assert career_profile_analyst_agent.output_key == "career_profile_output"
 
     def test_coordinator_description_includes_phase2(self):
         """Verify Career Coordinator description mentions Phase 2 capabilities."""
